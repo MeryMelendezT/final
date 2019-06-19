@@ -20,6 +20,7 @@ class UserController extends Controller
     	$surname = (!is_null($json) && isset($params->surname)) ? $params->surname : null;
     	$role = 'ROLE_USER';
     	$password = (!is_null($json) && isset($params->password)) ? $params->password : null;
+        $address = (!is_null($json) && isset($params->address)) ? $params->address : null;
 
     	if(!is_null($email) && !is_null($password) && !is_null($name)){
 
@@ -28,10 +29,11 @@ class UserController extends Controller
     		$user->email = $email;
     		$user->name = $name;
     		$user->surname = $surname;
-    		$user->role = $role;
+    		$user->role_id = $role;
 
     		$pwd = hash('sha256', $password);
     		$user->password = $pwd;
+            $user->address= $address;
 
     		// Comprobar usuario duplicado
     		//$isset_user = User::where('email', '=', $email)->first();
