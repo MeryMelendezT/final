@@ -29,3 +29,8 @@ Route::resource('/cars', 'CarController');
 Route::get('/clear-cache', function(){
     $code = Artisan::call('cache:clear');
 });
+
+
+//Mail
+Route::post('/enviarCorreo', 'EmailController@enviarCorreo');
+

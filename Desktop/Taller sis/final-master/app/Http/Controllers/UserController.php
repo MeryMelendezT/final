@@ -7,38 +7,42 @@ use App\Helpers\JwtAuth;
 use App\Http\Requests;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
     public function register(Request $request){
-    	//Recoger post
+
+        //Recoger post
     	$json = $request->input('json', null);
     	$params = json_decode($json);
 
-    	$email = (!is_null($json) && isset($params->email)) ? $params->email : null;
-    	$name = (!is_null($json) && isset($params->name)) ? $params->name : null;
-    	$surname = (!is_null($json) && isset($params->surname)) ? $params->surname : null;
-    	$role = 'ROLE_USER';
-    	$password = (!is_null($json) && isset($params->password)) ? $params->password : null;
-        $address = (!is_null($json) && isset($params->address)) ? $params->address : null;
+        //$role_id = (!is_null($json) && isset($params->role_id)) ? $params->role_id : null;
+        $email = (!is_null($json) && isset($params->email)) ? $params->email : null;
+        $name = (!is_null($json) && isset($params->name)) ? $params->name : null;
+        $surname = (!is_null($json) && isset($params->surname)) ? $params->surname : null;
+        $role = (!is_null($json) && isset($params->role)) ? $params->surname : null;
+        $password = (!is_null($json) && isset($params->password)) ? $params->password : null;
+        //$address = (!is_null($json) && isset($params->address)) ? $params->address : null;
 
-    	if(!is_null($email) && !is_null($password) && !is_null($name)){
+    	if(!is_null($email) && !is_null($password) && !is_null($name)&& !is_null($surname)&& !is_null($role)){
 
     		// Crear el usuario
     		$user = new User();
     		$user->email = $email;
     		$user->name = $name;
     		$user->surname = $surname;
-    		$user->role_id = $role;
+    		$user->role = '1';
 
     		$pwd = hash('sha256', $password);
     		$user->password = $pwd;
-            $user->address= $address;
+            //$user->address= $address;
 
     		// Comprobar usuario duplicado
-    		//$isset_user = User::where('email', '=', $email)->first();
+    		$isset_user = User::where('email', '=', $email)->count();
 
-    		//if(count($isset_user) == 0){
+    		if($isset_user == 0){
     			// Guardar el usuario
     			$user->save();
 
@@ -47,14 +51,17 @@ class UserController extends Controller
 	    			'code' => 200,
 	    			'message' => 'Usuario registrado correctamente!!'
 	    		);
-    		/*}else{
+                Log::info($data);
+
+    		}else{
     			// No guardarlo porque ya existe
     			$data = array(
 	    			'status' => 'error',
 	    			'code' => 400,
 	    			'message' => 'Usuario duplicado, no puede registrarse'
 	    		);
-    		}*/
+                Log::warning($data);
+    		}
 
 
     	}else{
@@ -63,6 +70,9 @@ class UserController extends Controller
     			'code' => 400,
     			'message' => 'Usuario no creado'
     		);
+
+            Log::alert($data);
+
     	}
 
     	return response()->json($data, 200);
@@ -94,8 +104,13 @@ class UserController extends Controller
                     'status' => 'error',
                     'message' => 'Envia tus datos por post'
                 );
+            Log::alert($signup);
+
         }
 
+        Log::info("Usuario correctamente loggeado");
         return response()->json($signup, 200);
+
     }
+
 }

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Helpers\JwtAuth;
 use App\Models\Car;
+use Illuminate\Support\Facades\Log;
 
 class CarController extends Controller
 {
@@ -16,6 +17,8 @@ class CarController extends Controller
     			'cars' => $cars,
     			'status' => 'success'
     		), 200);
+        Log::info("Listado de autos");
+
     }
 
     public function show($id){
@@ -71,6 +74,7 @@ class CarController extends Controller
     			'status' => 'success',
     			'code' => 200,
     		);
+            Log::info($data);
 
     	}else{
     		// Devolver error
